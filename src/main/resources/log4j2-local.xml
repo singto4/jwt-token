@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<Configuration monitorInterval="60">
+	<Properties>
+		<Property name="container-id">${sys:hostName}</Property>
+		<Property name="app-name">@project.name@</Property>
+		<Property name="app-artifacts">@project.artifactId@</Property>
+		<Property name="package-name">@project.groupId@</Property>
+		<Property name="log-path">./log</Property>
+		<Property name="LOG_PATTERN_OLD">%d{dd-MM-yyyy HH:mm:ss:SSS} - [%X{MDC_SESSION_ID}][%X{MDC_USER_ID}] %-5p %l - %m%n</Property>
+		<Property name="LOG_PATTERN">%d{dd-MM-yyyy HH:mm:ss:SSS} - [%X{MDC_SESSION_ID}][%X{MDC_USER_ID}] %-5p - %m%n</Property>
+	</Properties>
+	<Appenders>
+		<Console name="Console-Appender" target="SYSTEM_OUT">
+			<PatternLayout pattern="${LOG_PATTERN}" />
+		</Console>
+		<RollingFile name="LoggerApp"
+			fileName="${log-path}/${app-name}_${container-id}.debug.log"
+            filePattern="${log-path}/${app-name}_${container-id}_%d{yyyy-MM-dd}.log.gz"
+			ignoreExceptions="false">
+			<PatternLayout pattern="${LOG_PATTERN}" />
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1"
+					modulate="true" />
+			</Policies>
+		</RollingFile>
+		<Async name="Async">
+			<AppenderRef ref="LoggerApp" />
+		</Async>
+	</Appenders>
+	<Loggers>
+		<Logger name="com.example.app" level="debug">
+			<AppenderRef ref="LoggerApp" />
+		</Logger>
+		<Logger name="org.hibernate.SQL" level="debug">
+		    <AppenderRef ref="LoggerApp" />
+	    </Logger>
+		<Root level="info">
+		    <AppenderRef ref="Console-Appender" />
+		</Root>
+	</Loggers>
+</Configuration>
